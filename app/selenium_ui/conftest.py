@@ -108,7 +108,7 @@ def is_docker():
     )
 
 
-def print_timing(interaction=None):
+def print_timing(interaction=None, page=None):
     assert interaction is not None, "Interaction name is not passed to print_timing decorator"
 
     def deco_wrapper(func):
@@ -137,7 +137,7 @@ def print_timing(interaction=None):
             with filelock.SoftFileLock(lockfile):
                 with open(selenium_results_file, "a+") as jtl_file:
                     timestamp = round(time.time() * 1000)
-                    jtl_file.write(f"{timestamp},{timing},{interaction},,{error_msg},,{success},0,0,0,0,,0\n")
+                    jtl_file.write(f"{timestamp},{timing},{interaction},{page},{error_msg},,{success},0,0,0,0,,0\n")
 
             print(f"{timestamp},{timing},{interaction},{error_msg},{success}")
 
