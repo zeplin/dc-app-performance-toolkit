@@ -69,7 +69,7 @@ def view_page(webdriver, datasets):
 def view_blog(webdriver, datasets):
     blog = Page(webdriver, page_id=datasets['blog_id'])
 
-    @print_timing("selenium_view_blog", page=blog)
+    @print_timing("selenium_view_blog", page=datasets['blog_id'])
     def measure():
         blog.go_to()
         blog.wait_for_page_loaded()
