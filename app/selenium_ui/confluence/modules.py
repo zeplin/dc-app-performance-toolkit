@@ -59,7 +59,7 @@ def login(webdriver, datasets):
 def view_page(webdriver, datasets):
     page = Page(webdriver, page_id=datasets['page_id'])
 
-    @print_timing("selenium_view_page")
+    @print_timing("selenium_view_page", page=datasets['page_id'])
     def measure():
         page.go_to()
         page.wait_for_page_loaded()
