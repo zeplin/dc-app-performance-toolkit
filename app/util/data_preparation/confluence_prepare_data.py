@@ -71,7 +71,9 @@ def __get_pages(confluence_api, count):
                       ' and title !~ JMeter'  # filter out pages created by JMeter
                       ' and title !~ Selenium'  # filter out pages created by Selenium
                       ' and title !~ locust'  # filter out pages created by locust
-                      ' and title !~ Home')  # filter out space Home pages
+                      ' and title !~ Home'  # filter out space Home pages
+                      ' and text !~ PAGE_14'
+                      ' and text !~ PAGE_29')
     if not pages:
         raise SystemExit(f"There are no Pages in Confluence accessible by a random performance user: "
                          f"{confluence_api.user}")
