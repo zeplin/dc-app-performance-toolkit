@@ -184,8 +184,8 @@ def webdriver(app_settings):
             print('get driver from global')
             globals.driver.delete_all_cookies()
             print('clear browser cookies')
-            globals.driver.execute_script("window.localStorage.clear();")
-            print('clear local storage cache')
+            # globals.driver.execute_script("window.localStorage.clear();")
+            # print('clear local storage cache')
             return globals.driver
         except WebDriverException:
             # re-init driver if it broken

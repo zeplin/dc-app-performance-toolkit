@@ -92,8 +92,8 @@ def __get_custom_pages(confluence_api, count, cql):
 def __get_blogs(confluence_api, count):
     blogs = confluence_api.get_content_search(
         0, count, cql='type=blogpost'
-                      ' and title !~ Performance'
-                      ' and text ~ BLOG_5')
+                      ' and title !~ Performance')
+                      # ' and text ~ BLOG_5')
     if not blogs:
         raise SystemExit(f"There are no Blog posts in Confluence accessible by a random performance user: "
                          f"{confluence_api.user}")
