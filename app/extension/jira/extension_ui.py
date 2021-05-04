@@ -7,11 +7,13 @@ from selenium_ui.conftest import print_timing
 from selenium_ui.jira.pages.pages import Login
 from util.conf import JIRA_SETTINGS
 
+ISSUES = "issues"
 
-def app_specific_action(webdriver, datasets):
+def view_zeplin_section(webdriver, datasets):
     page = BasePage(webdriver)
-    if datasets['custom_issues']:
-        issue_key = datasets['custom_issue_key']
+
+    issue = random.choice(datasets[ISSUES])
+    issue_key = issue[0]
 
     # To run action as specific user uncomment code bellow.
     # NOTE: If app_specific_action is running as specific user, make sure that app_specific_action is running
@@ -30,15 +32,34 @@ def app_specific_action(webdriver, datasets):
     #             login_page.first_login_second_page_setup()
     #         login_page.wait_for_page_loaded()
     #     app_specific_user_login(username='admin', password='admin')
-    # measure()
 
-    @print_timing("selenium_app_custom_action")
+    @print_timing("selenium_zeplin_for_jira_zeplin_section")
     def measure():
-        @print_timing("selenium_app_custom_action:view_issue")
-        def sub_measure():
-            page.go_to_url(f"{JIRA_SETTINGS.server_url}/browse/{issue_key}")
-            page.wait_until_visible((By.ID, "summary-val"))  # Wait for summary field visible
-            page.wait_until_visible((By.ID, "ID_OF_YOUR_APP_SPECIFIC_UI_ELEMENT"))  # Wait for you app-specific UI element by ID selector
-        sub_measure()
+        page.go_to_url(f"{JIRA_SETTINGS.server_url}/browse/{issue_key}")
+        page.wait_until_visible((By.ID, "zeplin-panel"))
+        page.wait_until_visible((By.ID, "attached-resources"))
+
     measure()
 
+
+def use_zeplin_attachment_dropdown(webdriver, datasets):
+    page = BasePage(webdriver)
+
+    issue = random.choice(datasets[ISSUES])
+    issue_key = issue[0]
+
+    @print_timing("selenium_zeplin_for_jira_attachments_dropdown")
+    def measure():
+        page.go_to_url(f"{JIRA_SETTINGS.server_url}/browse/{issue_key}")
+        page.wait_until_visible((By.ID, "zeplin-panel"))
+        page.wait_until_visible((By.ID, "attached-resources"))
+        page.wait_until_clickable((By.ID, "attach-button"))
+        page.get_element((By.ID, "attach-button")).click()
+        page.wait_until_visible((By.ID, "resources"))
+        page.wait_until_clickable((By.ID, "screens-link"))
+        page.get_element((By.ID, "projects-link")).click()
+        page.wait_until_visible((By.XPATH, '//*[@id="dropdown-projects"]/div/div[2]'))
+        page.get_element((By.XPATH, '//*[@id="dropdown-projects"]/div/div[2]')).click()
+        page.wait_until_invisible((By.ID, "resources"))
+
+    measure()
