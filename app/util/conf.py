@@ -2,8 +2,8 @@ import yaml
 
 from util.project_paths import JIRA_YML, CONFLUENCE_YML, BITBUCKET_YML, JSM_YML, CROWD_YML, BAMBOO_YML
 
-TOOLKIT_VERSION = '6.1.0'
-UNSUPPORTED_VERSION = '4.1.0'
+TOOLKIT_VERSION = '8.2.1'
+UNSUPPORTED_VERSION = '7.5.0'
 
 
 def read_yml_file(file):
@@ -14,9 +14,9 @@ def read_yml_file(file):
 class BaseAppSettings:
 
     def __init__(self, config_yml):
-        obj = read_yml_file(config_yml)
-        self.settings = obj['settings']
-        self.env_settings = obj['settings']['env']
+        self.obj = read_yml_file(config_yml)
+        self.settings = self.obj['settings']
+        self.env_settings = self.obj['settings']['env']
         self.hostname = self.get_property('application_hostname')
         self.protocol = self.get_property('application_protocol')
         self.port = self.get_property('application_port')
@@ -27,6 +27,9 @@ class BaseAppSettings:
         self.analytics_collector = self.get_property('allow_analytics')
         self.load_executor = self.get_property('load_executor')
         self.secure = self.get_property('secure')
+        self.environment_compliance_check = self.get_property('environment_compliance_check')
+        self.chromedriver_version = (
+            self.obj.get('modules', {}).get('selenium', {}).get('chromedriver', {}).get('version', None))
 
     @property
     def server_url(self):
@@ -58,6 +61,7 @@ class ConfluenceSettings(BaseAppSettings):
         self.custom_dataset_query = self.get_property('custom_dataset_query') or ""
         self.verbose = self.settings['verbose']
         self.total_actions_per_hour = self.get_property('total_actions_per_hour')
+        self.extended_metrics = self.get_property('extended_metrics')
 
 
 class BitbucketSettings(BaseAppSettings):
@@ -82,6 +86,7 @@ class JsmSettings(BaseAppSettings):
         self.concurrency = self.agents_concurrency + self.customers_concurrency
         self.custom_dataset_query = self.get_property('custom_dataset_query') or ""
         self.verbose = self.settings['verbose']
+        self.insight = self.get_property('insight')
 
 
 class CrowdSettings(BaseAppSettings):
