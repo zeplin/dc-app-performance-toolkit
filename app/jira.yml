@@ -25,7 +25,7 @@ settings:
     # Action percentage for Jmeter and Locust load executors
     create_issue: 4
     search_jql: 11
-    view_issue: 34
+    view_issue: 24
     view_project_summary: 3
     view_dashboard: 10
     edit_issue: 5

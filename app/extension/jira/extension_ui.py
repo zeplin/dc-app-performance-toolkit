@@ -7,11 +7,14 @@ from selenium_ui.conftest import print_timing
 from selenium_ui.jira.pages.pages import Login, AdminPage
 from util.conf import JIRA_SETTINGS
 
+ISSUES = "issues"
+ZEPLIN_TEST_PROJECT_NAME = "Jira_DC_Annual_Tests_2026"
 
-def app_specific_action(webdriver, datasets):
+def view_zeplin_section(webdriver, datasets):
     page = BasePage(webdriver)
-    if datasets['custom_issues']:
-        issue_key = datasets['custom_issue_key']
+
+    issue = random.choice(datasets[ISSUES])
+    issue_key = issue[0]
 
     # To run action as specific user uncomment code bellow.
     # NOTE: If app_specific_action is running as specific user, make sure that app_specific_action is running
@@ -37,13 +40,46 @@ def app_specific_action(webdriver, datasets):
     #     app_specific_user_login(username='admin', password='admin')
     # measure()
 
-    @print_timing("selenium_app_custom_action")
+    @print_timing("selenium_zeplin_for_jira_zeplin_section")
     def measure():
-        @print_timing("selenium_app_custom_action:view_issue")
-        def sub_measure():
-            page.go_to_url(f"{JIRA_SETTINGS.server_url}/browse/{issue_key}")
-            page.wait_until_visible((By.ID, "summary-val"))  # Wait for summary field visible
-            page.wait_until_visible((By.ID, "ID_OF_YOUR_APP_SPECIFIC_UI_ELEMENT"))  # Wait for you app-specific UI element by ID selector
-        sub_measure()
+        page.go_to_url(f"{JIRA_SETTINGS.server_url}/browse/{issue_key}")
+        page.wait_until_visible((By.ID, "zeplin-panel"))
+        page.wait_until_visible((By.ID, "attached-resources"))
+
     measure()
 
+
+def use_zeplin_attachment_dropdown(webdriver, datasets):
+    page = BasePage(webdriver)
+
+    issue = random.choice(datasets[ISSUES])
+    issue_key = issue[0]
+
+    @print_timing("selenium_zeplin_for_jira_attachments_dropdown")
+    def measure():
+        page.go_to_url(f"{JIRA_SETTINGS.server_url}/browse/{issue_key}")
+        page.wait_until_visible((By.ID, "zeplin-panel"))
+        page.wait_until_visible((By.ID, "attached-resources"))
+        page.wait_until_clickable((By.ID, "attach-button"))
+        page.get_element((By.ID, "attach-button")).click()
+        page.wait_until_visible((By.ID, "resources"))
+        page.wait_until_clickable((By.ID, "projects-link"))
+        page.get_element((By.ID, "projects-link")).click()
+        # IMPORTANT
+        # This action will attach issues to the project below when it is available.
+        # Ensure that the Zeplin user has access to test or dummy projects to avoid affecting real data.
+        # If the project is already attached, the dropdown will not list it and the action will still pass.
+        page.wait_until_visible((By.CSS_SELECTOR, "#dropdown-projects .dropdown-item"))
+        xpath_to_project = (
+            f'//*[@id="dropdown-projects"]'
+            f'//*[contains(concat(" ", normalize-space(@class), " "), " dropdown-item ")'
+            f' and starts-with(normalize-space(.), "{ZEPLIN_TEST_PROJECT_NAME}")]'
+        )
+        if page.element_exists((By.XPATH, xpath_to_project)):
+            page.wait_until_clickable((By.XPATH, xpath_to_project))
+            page.get_element((By.XPATH, xpath_to_project)).click()
+            page.wait_until_invisible((By.ID, "resources"))
+        else:
+            page.get_element((By.CSS_SELECTOR, "#dropdown-projects .back-button")).click()
+
+    measure()

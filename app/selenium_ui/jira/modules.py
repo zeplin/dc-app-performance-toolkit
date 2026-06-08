@@ -37,8 +37,8 @@ def setup_run_data(datasets):
     scrum_boards = random.choice(datasets[SCRUM_BOARDS])
     kanban_boards = random.choice(datasets[KANBAN_BOARDS])
     projects = random.choice(datasets[PROJECTS])
-    datasets['current_session']['username'] = user[0]
-    datasets['current_session']['password'] = user[1]
+    datasets['current_session']['username'] = 'admin' # this is the user in Jira connected to Zeplin
+    datasets['current_session']['password'] = 'admin'
     datasets['current_session']['issue_key'] = issue[0]
     datasets['current_session']['issue_id'] = issue[1]
     datasets['current_session']['project_key'] = projects[0]
